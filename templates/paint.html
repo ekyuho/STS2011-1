@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Paint Web</title>
+    <style type="text/css">
+        canvas{border: 1px solid black};
+    </style>
+</head>
+<body>
+    <div>
+        <canvas id="canvas" width="28" height="28">
+
+        </canvas>
+    </div>
+    <p id="result"></p>
+    <button value="predict" onclick="myFunction();" />
+
+    <script type="text/javascript">
+        var drawing = false;
+        var canvas, ctx;
+
+        window.onload = function() {
+            canvas = document.getElementById("canvas");
+            ctx = canvas.getContext("2d");
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+
+            canvas.addEventListener("mousedown", listener);
+            canvas.addEventListener("mousemove", listener);
+            canvas.addEventListener("mouseup", listener);
+            canvas.addEventListener("mouseout", listener);
+        }
+
+        function listener(event) {
+            var x = event.pageX - canvas.offsetLeft;
+            var y = event.pageY - canvas.offsetTop;
+            switch(event.type) {
+            case "mousedown":
+                drawing = true;
+                ctx.moveTo(x, y);
+                break;
+            case "mousemove":
+                if (drawing) {
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                }
+                break;
+            case "mouseup":
+                drawing = false;
+                break;
+            case "mouseout":
+                drawing = false;
+                break;
+            }
+        }
+
+        function get_image_data() {
+            var image_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var data = image_data.data;
+            var str = "";
+            var temp;
+            console.log(data);
+            console.log(canvas.width);
+            console.log(canvas.height);
+            temp = parseInt(0.34 * data[0] + 0.5 * data[1] + 0.16 * data[2]);
+            str = str + temp.toString();
+            for (var i = 4; i < data.length; i += 4) {
+                temp = parseInt(0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2]);
+                str = str + "_" + temp.toString();
+            }
+            return str;
+        }
+
+        function myFunction() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState === XMLHttpRequest.DONE) {
+                    document.getElementById("result").innerHTML = xhttp.responseText;
+                }
+            };
+            xhttp.open("POST", "http://127.0.0.1:5000/predict/" + get_image_data(), true);
+            xhttp.send();
+        }
+    </script>
+</body>
+</html>
