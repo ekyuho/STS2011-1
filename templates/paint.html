@@ -13,7 +13,8 @@
         </canvas>
     </div>
     <p id="result"></p>
-    <button value="predict" onclick="myFunction();" />
+    <button onclick="predict();" >predict</button>
+    <button onclick="clear_canvas();" >clear</button>
 
     <script type="text/javascript">
         var drawing = false;
@@ -22,8 +23,7 @@
         window.onload = function() {
             canvas = document.getElementById("canvas");
             ctx = canvas.getContext("2d");
-            ctx.fillStyle = "white";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            clear_canvas();
             ctx.beginPath();
 
             canvas.addEventListener("mousedown", listener);
@@ -72,7 +72,7 @@
             return str;
         }
 
-        function myFunction() {
+        function predict() {
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
                 if (xhttp.readyState === XMLHttpRequest.DONE) {
@@ -81,6 +81,12 @@
             };
             xhttp.open("POST", "http://127.0.0.1:5000/predict/" + get_image_data(), true);
             xhttp.send();
+        }
+
+        function clear_canvas() {
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
         }
     </script>
 </body>
