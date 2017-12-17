@@ -19,12 +19,12 @@ def paint():
 @cross_origin()
 def predict(data):
     val = 0
-    print(data)
+    #print(data)
     splited = data.split('_')
     print('len', len(splited))
     data = np.array([(1.0 - float(i) / 255.0) for i in splited])
     data = np.tile(data, (128, 1))
-    print (data[0])
+    #print (data[0])
 
     result = sess.run(tensor_y, feed_dict= {
         tensor_x: data
